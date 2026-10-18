@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Meteorite Discoveries in North America</title>
+  <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <style>
+    body { margin: 0; }
+    #map { position: absolute; inset: 0; }
+    #map canvas.p5Canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+const myMap = new maplibregl.Map({
+  container: 'map',
+  center: [-123.2460, 49.2606],
+  zoom: 3,
+  style: 'https://tiles.openfreemap.org/styles/liberty'
+});
+
+myMap.addControl(new maplibregl.NavigationControl());
+
+function latLngToPixel(lat, lng) {
+  return myMap.project([lng, lat]);
+}
+
+function pixelToLatLng(x, y) {
+  const ll = myMap.unproject([x, y]);
+  return { lat: ll.lat, lng: ll.lng };
+}
+
+let meteorites;
+
+function preload() {
+  meteorites = loadTable('Meteorite_Landings.csv', 'csv', 'header');
+}
+
+function setup() {
+  const canvas = createCanvas(windowWidth, windowHeight);
+  canvas.parent('map');
+  myMap.on('move', () => redraw());
+  myMap.on('load', () => redraw());
+  noLoop();
+}
+
+function symbolSize(massInGrams) {
+  return 2 + 38 * sqrt(massInGrams / 60000000);
+}
+
+function draw() {
+  clear();
+  blendMode(BLEND);
+
+  const bounds = myMap.getBounds();
+
+  for (let i = 0; i < meteorites.getRowCount(); i++) {
+    const lat = meteorites.getNum(i, 'reclat');
+    const lng = meteorites.getNum(i, 'reclong');
+
+    if (!bounds.contains([lng, lat])) continue;
+
+    const pos = latLngToPixel(lat, lng);
+    const size = symbolSize(meteorites.getNum(i, 'mass (g)'));
+
+    if (meteorites.getString(i, 'fall') === 'Fell') {
+
+      // Orange circles are meteorites that were seen falling
+      noFill();
+      stroke(220, 90, 30);
+      strokeWeight(2.5);
+      ellipse(pos.x, pos.y, size + 5, size + 5);
+
+    } else {
+
+      // Blue circles are meteorites found later
+      // Transparency makes overlapping discoveries visible
+      noStroke();
+      fill(30, 90, 180, 90);
+      ellipse(pos.x, pos.y, size + 2, size + 2);
+
+    }
+  }
+
+  drawTitle();
+  drawLegend();
+}
+
+function drawTitle() {
+  const x = 20, y = 25;
+
+  noStroke();
+  fill(255, 255, 255, 225);
+  rect(x - 10, y - 12, 390, 73);
+
+  fill(30, 50, 65);
+  textSize(20);
+  text("Meteorite Discoveries", x, y + 12);
+
+  textSize(12);
+  text("Distribution and Mass of Reported Meteorites", x, y + 35);
+}
+
+function drawLegend() {
+  const x = 20, y = height - 105;
+
+  noStroke();
+  fill(255, 255, 255, 230);
+  rect(x - 10, y - 15, 365, 115);
+
+  fill(30, 50, 65);
+  textSize(13);
+  text("Meteorites in NASA's catalogue (size represents mass)", x, y);
+
+  noFill();
+  stroke(220, 90, 30);
+  strokeWeight(2.5);
+  ellipse(x + 8, y + 23, 12, 12);
+
+  noStroke();
+  fill(30, 50, 65);
+  text('Seen falling ("Fell")', x + 25, y + 27);
+
+  fill(30, 90, 180, 150);
+  ellipse(x + 8, y + 48, 12, 12);
+
+  fill(30, 50, 65);
+  text('Found later ("Found")', x + 25, y + 52);
+
+  textSize(11);
+  text("Empty areas may reflect fewer searches or reports.", x, y + 78);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  redraw();
+}
+</script>
+</body>
+</html>
