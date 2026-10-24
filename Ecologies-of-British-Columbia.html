@@ -74,44 +74,6 @@
       }
     }
 
-    map.on('load', () => {
-      if (!map.getLayer('bec-zones')) { warn('BEC layer missing: check style.json.'); return; }
-      profilesReady.then(makeLegend);
-      map.on('click', 'bec-zones', event => {
-        const feature = event.features[0];
-        if (!feature) return;
-        const code = feature.properties.ZONE;
-        const info = profiles[code];
-        const box = document.createElement('div');
-        const heading = document.createElement('h3');
-        heading.textContent = feature.properties.ZONE_NAME || code;
-        box.append(heading);
-        if (info) {
-          for (const key of ['landscape', 'climate', 'vegetation', 'wildlife']) {
-            const p = document.createElement('p');
-            const b = document.createElement('b');
-            b.textContent = key.charAt(0).toUpperCase() + key.slice(1) + ': ';
-            p.append(b, document.createTextNode(info[key]));
-            box.append(p);
-          }
-        }
-        new maplibregl.Popup().setLngLat(event.lngLat).setDOMContent(box).addTo(map);
-      });
-      map.on('mouseenter', 'bec-zones', () => map.getCanvas().style.cursor = 'pointer');
-      map.on('mouseleave', 'bec-zones', () => map.getCanvas().style.cursor = '');
-    });
-    map.on('error', event => {
-      console.error('Map error:', event.error);
-      warn('The map could not load. Publish these files together on GitHub Pages and check the Console (F12).');
-    });
-
-    if (location.protocol === 'file:') {
-      warn('This map uses JSON files. Opening index.html directly from Downloads can block them. Use GitHub Pages instead.');
-    }
-    // Verify that we are not presenting the government's 1,000-feature preview as complete.
-    fetch('bc_bec_zones.geojson').then(r => r.json()).then(data => {
-      if (data.exceededTransferLimit === true) {
-        warn('Preview data only: the BC server exported its first 1,000 features. Some ecosystems are missing until the full file is substituted.');
       }
     }).catch(() => {});
   </script>
