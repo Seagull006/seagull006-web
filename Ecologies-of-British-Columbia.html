@@ -46,17 +46,7 @@
     const message = document.getElementById('message');
     function warn(text) { message.textContent = text; message.style.display = 'block'; }
 
-    const profilesReady = fetch('zones.csv').then(response => {
-      if (!response.ok) throw new Error('zones.csv could not be loaded');
-      return response.text();
-    }).then(text => {
-      const lines = text.trim().split('\n').slice(1);
-      for (const line of lines) {
-        const [code, name, landscape, climate, vegetation, wildlife] = line.replace(/\r/g, '').split(',');
-        profiles[code] = {name, landscape, climate, vegetation, wildlife};
-      }
-    }).catch(error => console.error('Popup CSV error:', error));
-
+   
     function makeLegend() {
       const expression = map.getStyle().layers.find(layer => layer.id === 'bec-zones').paint['fill-color'];
       const colors = {};
