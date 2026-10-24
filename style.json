@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "name": "Wild BC — ecological atlas (Maputnik editable)",
+  "name": "An Ecological Guide to British Columbia",
   "sources": {
     "openmaptiles": {
       "type": "vector",
@@ -17,8 +17,8 @@
     },
     "bec": {
       "type": "geojson",
-      "data": "bc_bec_zones.geojson",
-      "attribution": "Province of British Columbia — BEC Zones, generalized (1:2M)"
+      "data": "https://seagull006.github.io/seagull006-web/bc_bec_zones.geojson",
+      "attribution": "BEC Zones (generalized 1:2M), Province of British Columbia"
     }
   },
   "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
@@ -56,7 +56,7 @@
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "landcover",
-      "minzoom": 8,
+      "minzoom": 9,
       "filter": [
         "==",
         [
@@ -214,7 +214,7 @@
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "transportation",
-      "minzoom": 8,
+      "minzoom": 9,
       "filter": [
         "in",
         [
@@ -240,10 +240,10 @@
           [
             "zoom"
           ],
-          8,
-          0.1,
-          10,
-          0.52
+          9,
+          0.18,
+          11,
+          0.43
         ],
         "line-width": [
           "interpolate",
@@ -275,12 +275,12 @@
       ],
       "paint": {
         "line-color": "#7d837e",
-        "line-opacity": 0.55,
+        "line-opacity": 0.35,
         "line-dasharray": [
           3,
           1.5
         ],
-        "line-width": 0.8
+        "line-width": 0.65
       }
     },
     {
